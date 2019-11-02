@@ -8,7 +8,11 @@ import cuchaz.enigma.translation.mapping.MappingDelta;
 import cuchaz.enigma.translation.mapping.MappingSaveParameters;
 import cuchaz.enigma.translation.mapping.tree.EntryTree;
 import cuchaz.enigma.translation.mapping.tree.EntryTreeNode;
-import cuchaz.enigma.translation.representation.entry.*;
+import cuchaz.enigma.translation.representation.entry.ClassEntry;
+import cuchaz.enigma.translation.representation.entry.Entry;
+import cuchaz.enigma.translation.representation.entry.FieldEntry;
+import cuchaz.enigma.translation.representation.entry.LocalVariableEntry;
+import cuchaz.enigma.translation.representation.entry.MethodEntry;
 import cuchaz.enigma.utils.LFPrintWriter;
 
 import java.io.IOException;
@@ -34,7 +38,7 @@ public final class TinyV2Writer implements MappingsWriter {
 
 	@Override
 	public void write(EntryTree<EntryMapping> mappings, MappingDelta<EntryMapping> delta, Path path, ProgressListener progress, MappingSaveParameters parameters) {
-		List<EntryTreeNode<EntryMapping>> classes =	StreamSupport.stream(mappings.spliterator(), false).filter(node -> node.getEntry() instanceof ClassEntry).collect(Collectors.toList());
+		List<EntryTreeNode<EntryMapping>> classes = StreamSupport.stream(mappings.spliterator(), false).filter(node -> node.getEntry() instanceof ClassEntry).collect(Collectors.toList());
 
 		try (PrintWriter writer = new LFPrintWriter(Files.newBufferedWriter(path))) {
 			writer.println("tiny\t2\t" + MINOR_VERSION + "\t" + obfHeader + "\t" + deobfHeader);
@@ -68,9 +72,9 @@ public final class TinyV2Writer implements MappingsWriter {
 		String mappedName = String.join("$", parts);
 
 		writer.print("\t");
-		if (!fullName.equals(mappedName)) {
-			writer.print(mappedName);
-		}
+
+		writer.print(mappedName); // todo escaping when we have v2 fixed later
+
 		writer.println();
 
 		writeComment(writer, node.getValue(), 1);
@@ -94,7 +98,7 @@ public final class TinyV2Writer implements MappingsWriter {
 		writer.print("\t");
 		EntryMapping mapping = node.getValue();
 		if (mapping == null) {
-			writer.println();
+			writer.println(node.getEntry().getName()); // todo fix v2 name inference
 		} else {
 			writer.println(mapping.getTargetName());
 
@@ -122,7 +126,7 @@ public final class TinyV2Writer implements MappingsWriter {
 		writer.print("\t");
 		EntryMapping mapping = node.getValue();
 		if (mapping == null) {
-			writer.println();
+			writer.println(node.getEntry().getName()); // todo fix v2 name inference
 		} else {
 			writer.println(mapping.getTargetName());
 
@@ -142,7 +146,7 @@ public final class TinyV2Writer implements MappingsWriter {
 		writer.print("\t");
 		EntryMapping mapping = node.getValue();
 		if (mapping == null) {
-			writer.println();
+			writer.println(); // todo ???
 		} else {
 			writer.println(mapping.getTargetName());
 
