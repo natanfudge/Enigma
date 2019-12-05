@@ -156,10 +156,12 @@ public final class TinyV2Writer implements MappingsWriter {
 
 	private void writeComment(PrintWriter writer, EntryMapping mapping, int indent) {
 		if (mapping != null && mapping.getJavadoc() != null) {
-			writer.print(indent(indent));
-			writer.print("c\t");
-			writer.print(MappingHelper.escape(mapping.getJavadoc()));
-			writer.println();
+			for (String line : mapping.getJavadoc().split("\n")) {
+				writer.print(indent(indent));
+				writer.print("c\t");
+				writer.print(MappingHelper.escape(line));
+				writer.println();
+			}
 		}
 	}
 
